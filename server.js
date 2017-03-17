@@ -109,6 +109,14 @@ router.get('/send/:message/:phoneNumber', function (req, res) {
   res.send({"Address":message});
 });
 
+router.get('/send/results/:message/:phoneNumber', function (req, res) {
+  var toNumber = req.params.phoneNumber;
+  var message = req.params.message;
+  console.log(message, toNumber);
+  sendTestResultsBySMS(message, toNumber);
+  res.send({"Results":message});
+});
+
 router.get('/generatePin/:phoneNumber', function (req, res) {
   //var pin = Math.floor(Math.random()*9000) + 1000+"";
   var toNumber = req.params.phoneNumber;
@@ -124,6 +132,21 @@ var sendAddressBySMS = function(message, toPhoneNumber) {
     to: toPhoneNumber,
     from: '13025787027',
     body: 'Your nearest Capital One ATM is at '+ message
+  }, function (error, message) {
+    if (!error) {
+      console.log('Success! The SID for this SMS message is:',message.sid);
+      console.log('Message sent on:',message.dateCreated);
+    } else {
+      console.log('Oops! There was an error.', error, toPhoneNumber);
+    }
+  });
+};
+
+var sendTestResultsBySMS = function(message, toPhoneNumber) {
+  client.sms.messages.create({
+    to: toPhoneNumber,
+    from: '13025787027',
+    body: `${message}`
   }, function (error, message) {
     if (!error) {
       console.log('Success! The SID for this SMS message is:',message.sid);
